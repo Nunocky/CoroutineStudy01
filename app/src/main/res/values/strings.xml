@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">CoroutineStudy01</string>
+
+    <string-array name="menu">
+        <item>sample 1 (original)</item>
+        <item>sample 2</item>
+        <item>sample 3</item>
+        <item>sample 4</item>
+    </string-array>
+</resources>

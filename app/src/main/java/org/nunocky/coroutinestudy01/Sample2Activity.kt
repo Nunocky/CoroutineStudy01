@@ -21,6 +21,10 @@ import java.util.concurrent.Executors
 
 
 class Sample2ViewModel : ViewModel() {
+    companion object {
+        private const val TAG = "Sample2ViewModel"
+    }
+
     private val _image = MutableLiveData<Bitmap?>(null)
     val image: LiveData<Bitmap?> = _image
 
@@ -29,12 +33,14 @@ class Sample2ViewModel : ViewModel() {
     @MainThread
     fun processCoroutine(bitmap: Bitmap) {
         if (job != null && job!!.isActive) {
+            Log.d(TAG, "frame skipped")
             return
         }
 
         job = viewModelScope.launch {
             val newBitmap = bitmap.flipHorizontal()
             _image.value = newBitmap
+            //delay(100)
             job = null
         }
     }
@@ -42,7 +48,7 @@ class Sample2ViewModel : ViewModel() {
 
 class Sample2Activity : AppCompatActivity() {
     companion object {
-        const val TAG = "Sample2Activity"
+        private const val TAG = "Sample2Activity"
     }
 
     private val viewModel: Sample2ViewModel by viewModels()

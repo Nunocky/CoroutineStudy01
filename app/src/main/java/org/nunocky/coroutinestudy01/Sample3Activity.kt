@@ -20,6 +20,10 @@ import java.util.concurrent.Executors
 
 
 class Sample3ViewModel : ViewModel() {
+    companion object {
+        private const val TAG = "Sample3ViewModel"
+    }
+
     private val _image = MutableLiveData<Bitmap?>(null)
     val image: LiveData<Bitmap?> = _image
 
@@ -27,13 +31,14 @@ class Sample3ViewModel : ViewModel() {
 
     fun processCoroutine(bitmap: Bitmap) = viewModelScope.launch {
         if (job != null) {
+            Log.d(TAG, "frame skipped")
             return@launch
         }
 
         job = viewModelScope.launch {
             val newBitmap = bitmap.flipHorizontal()
             _image.postValue(newBitmap)
-
+            //delay(100)
             job = null
         }
     }
@@ -41,7 +46,7 @@ class Sample3ViewModel : ViewModel() {
 
 class Sample3Activity : AppCompatActivity() {
     companion object {
-        const val TAG = "Sample3Activity"
+        private const val TAG = "Sample3Activity"
     }
 
     private val viewModel: Sample3ViewModel by viewModels()

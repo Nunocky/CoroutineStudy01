@@ -19,7 +19,7 @@ import java.util.concurrent.Executors
 
 class CameraFragment : Fragment() {
     interface Callback {
-        fun onPreview(bitmap: Bitmap)
+        fun onCameraPreview(bitmap: Bitmap)
     }
 
     companion object {
@@ -35,7 +35,6 @@ class CameraFragment : Fragment() {
         }
     }
 
-    //private lateinit var viewModel: Sample1ViewModel
     private lateinit var binding: FragmentCameraBinding
     private lateinit var cameraExecutor: ExecutorService
 
@@ -47,8 +46,6 @@ class CameraFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentCameraBinding.inflate(inflater, container, false)
-        //viewModel = ViewModelProvider(activity, this).get(Sample1ViewModel::class.java)
-
         return binding.root
     }
 
@@ -107,7 +104,7 @@ class CameraFragment : Fragment() {
                         it.setAnalyzer(cameraExecutor) { imageProxy ->
 
                             activity?.runOnUiThread {
-                                viewFinder.bitmap?.let { bitmap -> callback?.onPreview(bitmap) }
+                                viewFinder.bitmap?.let { bitmap -> callback?.onCameraPreview(bitmap) }
                             }
 
                             imageProxy.close()

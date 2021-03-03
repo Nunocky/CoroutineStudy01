@@ -69,7 +69,7 @@ class Sample1Activity : AppCompatActivity(), CameraFragment.Callback {
         }
     }
 
-    override fun onPreview(bitmap: Bitmap) {
+    override fun onCameraPreview(bitmap: Bitmap) {
         viewModel.processCoroutine(bitmap)
     }
 }

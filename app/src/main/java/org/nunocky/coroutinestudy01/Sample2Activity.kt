@@ -6,18 +6,11 @@ import android.util.Log
 import androidx.activity.viewModels
 import androidx.annotation.MainThread
 import androidx.appcompat.app.AppCompatActivity
-import androidx.camera.core.CameraSelector
-import androidx.camera.core.ImageAnalysis
-import androidx.camera.core.Preview
-import androidx.camera.lifecycle.ProcessCameraProvider
-import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.*
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import org.nunocky.coroutinestudy01.databinding.ActivitySample2Binding
-import java.util.concurrent.ExecutorService
-import java.util.concurrent.Executors
 
 
 class Sample2ViewModel : ViewModel() {
@@ -46,14 +39,13 @@ class Sample2ViewModel : ViewModel() {
     }
 }
 
-class Sample2Activity : AppCompatActivity() {
+class Sample2Activity : AppCompatActivity(), CameraFragment.Callback {
     companion object {
         private const val TAG = "Sample2Activity"
     }
 
     private val viewModel: Sample2ViewModel by viewModels()
     private lateinit var binding: ActivitySample2Binding
-    private lateinit var cameraExecutor: ExecutorService
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -61,67 +53,15 @@ class Sample2Activity : AppCompatActivity() {
         binding.viewModel = viewModel
         binding.lifecycleOwner = this
 
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.content, CameraFragment.newInstance(), "camera").commit()
+
         viewModel.image.observe(this) {
             it?.let { binding.imageView.setImageBitmap(it) }
         }
-
-        cameraExecutor = Executors.newSingleThreadExecutor()
     }
 
-    override fun onResume() {
-        super.onResume()
-        binding.camera.post { startCamera() }
+    override fun onCameraPreview(bitmap: Bitmap) {
+        viewModel.processCoroutine(bitmap)
     }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        cameraExecutor.shutdown()
-    }
-
-    private fun startCamera() {
-        val viewFinder = binding.camera
-
-        val cameraProviderFuture = ProcessCameraProvider.getInstance(this)
-
-        cameraProviderFuture.addListener({
-
-            val cameraProvider: ProcessCameraProvider = cameraProviderFuture.get()
-
-            val preview = Preview.Builder()
-                .build()
-                .also {
-                    it.setSurfaceProvider(viewFinder.surfaceProvider)
-                }
-
-            val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
-
-            val imageAnalyzer = ImageAnalysis.Builder()
-                .build()
-                .also {
-                    it.setAnalyzer(cameraExecutor) { imageProxy ->
-
-                        runOnUiThread {
-                            val bitmap = viewFinder.bitmap
-                            if (bitmap != null) {
-                                viewModel.processCoroutine(bitmap)
-                            }
-                        }
-                        imageProxy.close()
-                    }
-                }
-
-            try {
-                cameraProvider.unbindAll()
-
-                cameraProvider.bindToLifecycle(
-                    this, cameraSelector, preview, imageAnalyzer
-                )
-
-            } catch (e: Exception) {
-                Log.e(TAG, "Use case binding failed")
-            }
-
-        }, ContextCompat.getMainExecutor(this))
-    }
-
 }

@@ -44,7 +44,6 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
 
         if (!EasyPermissions.hasPermissions(this, *permissions)) {
             EasyPermissions.requestPermissions(this, "permission check", REQUEST_CODE, *permissions)
-
         }
     }
 

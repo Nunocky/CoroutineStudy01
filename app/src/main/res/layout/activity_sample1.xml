@@ -15,8 +15,8 @@
         android:layout_height="match_parent"
         tools:context=".Sample1Activity">
 
-        <androidx.camera.view.PreviewView
-            android:id="@+id/camera"
+        <FrameLayout
+            android:id="@+id/content"
             android:layout_width="0dp"
             android:layout_height="0dp"
             app:layout_constraintBottom_toTopOf="@+id/imageView"
@@ -35,7 +35,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/camera" />
+            app:layout_constraintTop_toBottomOf="@+id/content" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
